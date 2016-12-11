@@ -19,3 +19,24 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+API REST de ejemplo construida con spring security y MongoDB. Utiliza los siguientes elementos:
+
+ · Spring security 4.
+ · Spring mvc 4.
+ · Spring data 4.
+ · Spring Validation.
+ · JWT (Json Web Token).
+ 
+ Tools
+ 
+ · Eclipse Mars
+ · Tomcat 8
+ · MongoDB
+ · RoboMongo https://robomongo.org/
+ 
+ TODO
+ + Autenticación.
+   - Solo puede actualizar el usuario que está logado o bien el ROLE_ADMIN.
+   - Solo puede borrar el usuario que está logado o bien el ROLE_ADMIN.
