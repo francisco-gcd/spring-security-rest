@@ -31,3 +31,9 @@ Podemos encontrar un mayor detalle en la página [https://jwt.io/introduction/] 
 ## Spring Data (TODO)
 
 ## Spring Validation (TODO)
+
+## TODO
+ * Solo puede modificar los datos el mismo usuario o el administrador.
+ * Solo puede borrarse el mismo usuario o el administrador.
+ * Agregar fecha de expiración al token.
+ * Agregar paginación a las búsquedas de usuario.
