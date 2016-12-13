@@ -5,7 +5,7 @@ Además, para mantener la persistencia de usuarios se ha utilizado MongoDB con S
 Para utilizar la API se exponen las siguientes URL:
 
 |URL|Metodo|Descripción|
-|-|-|-|
+|---|---|---|
 |`GET`|`rest-api/user`| Todos los usuarios|
 |`GET`|`rest-api/user/{id}`| Detalle usuario|
 |`POST`|`rest-api/user`| Agregar usuario|
@@ -18,51 +18,56 @@ Para utilizar la API se exponen las siguientes URL:
 Para comprender como debe utilizarse a continuación enumeramos un ejemplo explicativo.
 
 * Registramos un usuario llamando a la url y enviando el siguiente JSON.
+```
+http://localhost:8080/rest-api/user
 
-	http://localhost:8080/rest-api/user
-	
-	{
-	  "password": "123456789",
-	  "username": "user",
-	  "accountNonExpired": true,
-	  "accountNonLocked": true,
-	  "credentialsNonExpired": true,
-	  "enabled": true,
-	  "authorities": [
-	  		{
-	  			"authority" : "ROLE_USER"
-	  		}
-	  	]
-	}
+{
+  "password": "123456789",
+  "username": "user",
+  "accountNonExpired": true,
+  "accountNonLocked": true,
+  "credentialsNonExpired": true,
+  "enabled": true,
+  "authorities": [
+		{
+			"authority" : "ROLE_USER"
+		}
+	]
+}
+```
 
-* Nos autenticamos en la aplicación recibiendo en el campo `` de la cabecera el token.
+* Nos autenticamos en la aplicación recibiendo en el campo `X-Auth-Token` de la cabecera el token.
 
-	http://localhost:8080/rest-api/login?username=user&password=123456789
-	
-	X-Auth-Token →eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dLCJ1c2VybmFtZSI6InVzZXIifQ==.1MPTBOUc6AqC3IBqoxAnlG1WnX2FuTuRCR5+y95mxmw=
+```
+http://localhost:8080/rest-api/login?username=user&password=123456789
+
+X-Auth-Token →eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dLCJ1c2VybmFtZSI6InVzZXIifQ==.1MPTBOUc6AqC3IBqoxAnlG1WnX2FuTuRCR5+y95mxmw=
+```
 
 * Pedimos ver todos los usuarios para lo que pasamos el token por la cabecera de la llamada HTTP.
 
-	http://localhost:8080/rest-api/user
+```
+http://localhost:8080/rest-api/user
+
+X-Auth-Token →eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dLCJ1c2VybmFtZSI6InVzZXIifQ==.1MPTBOUc6AqC3IBqoxAnlG1WnX2FuTuRCR5+y95mxmw=
 	
-	X-Auth-Token →eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dLCJ1c2VybmFtZSI6InVzZXIifQ==.1MPTBOUc6AqC3IBqoxAnlG1WnX2FuTuRCR5+y95mxmw=
-	
-	[
-	  {
-	    "id": "585049a7f8982a0543b9c23f",
-	    "password": "$2a$07$WT.m6kpQ94y0wDAOrLhUv.hX3k/By7wifXbS.LFDyPXbRsIYFHH3S",
-	    "username": "user",
-	    "accountNonExpired": true,
-	    "accountNonLocked": true,
-	    "credentialsNonExpired": true,
-	    "enabled": true,
-	    "authorities": [
-	      {
-	        "authority": "ROLE_USER"
-	      }
-	    ]
-	  }
-	]
+[
+  {
+    "id": "585049a7f8982a0543b9c23f",
+    "password": "$2a$07$WT.m6kpQ94y0wDAOrLhUv.hX3k/By7wifXbS.LFDyPXbRsIYFHH3S",
+    "username": "user",
+    "accountNonExpired": true,
+    "accountNonLocked": true,
+    "credentialsNonExpired": true,
+    "enabled": true,
+    "authorities": [
+      {
+	"authority": "ROLE_USER"
+      }
+    ]
+  }
+]
+```
 	
 # Configuración
 En la aplicación se encontrará el fichero app.properties que contiene los valores de configuración, en concreto serán:
