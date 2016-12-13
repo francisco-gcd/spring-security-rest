@@ -5,7 +5,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -38,7 +37,6 @@ public class UserController extends GenericController{
 		binder.setValidator(new UserValidator());
 	}
 
-	@PreAuthorize("isAuthenticated()")
 	@ResponseBody
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<User> find(@PathVariable String id, Authentication authentication){
@@ -46,7 +44,6 @@ public class UserController extends GenericController{
 	    return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Iterable<User>> findAll(){
@@ -54,7 +51,6 @@ public class UserController extends GenericController{
 	    return new ResponseEntity<Iterable<User>>(users, HttpStatus.OK);
 	}
 
-	@PreAuthorize("permitAll()")
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<User> create(@Validated @RequestBody User user) throws ServiceException {
@@ -62,7 +58,6 @@ public class UserController extends GenericController{
 		return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
 
-	@PreAuthorize("isAuthenticated()")
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.PUT, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<User> update(@Validated @RequestBody User user, BindingResult bindingResult, Authentication authentication) throws ServiceException, MethodArgumentNotValidException, NoSuchMethodException, SecurityException {
@@ -79,7 +74,6 @@ public class UserController extends GenericController{
 		return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
 
-	@PreAuthorize("isAuthenticated()")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(value="/{id}", method = RequestMethod.DELETE, produces = { MediaType.APPLICATION_JSON_VALUE })
