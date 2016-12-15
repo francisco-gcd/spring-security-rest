@@ -2,10 +2,12 @@ package es.pongo.controller.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -46,8 +48,8 @@ public class UserController extends GenericController{
 
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<Iterable<User>> findAll(){
-    	Iterable<User> users = userService.findAll();
+	public ResponseEntity<Iterable<User>> findAll(Pageable pageable){
+    	Iterable<User> users = userService.findAll(pageable);
 	    return new ResponseEntity<Iterable<User>>(users, HttpStatus.OK);
 	}
 
@@ -78,6 +80,16 @@ public class UserController extends GenericController{
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(value="/{id}", method = RequestMethod.DELETE, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public void remove(@PathVariable String id, Authentication authentication) throws ServiceException {
+		
+		User user = userService.find(id);
+		if(user == null){
+			
+		}
+		
+		if(!user.getUsername().equals(authentication.getName()) && !authentication.getAuthorities().contains("ROLE_ADMIN")){
+			
+		}
+		
 		userService.remove(id);
 	}
 }

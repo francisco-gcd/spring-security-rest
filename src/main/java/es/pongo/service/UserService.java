@@ -1,6 +1,7 @@
 package es.pongo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,8 +29,8 @@ public class UserService implements UserDetailsService{
 	}
 	
 	public User register(User user) throws ServiceException{
-		if(user.getAuthorities().contains(new Role("ROLE_ADMIN"))){
-			throw new ServiceException(HttpStatus.BAD_REQUEST, "A user can't ROLE_ADMIN");
+		if(user.getAuthorities().contains(new Role("ROLE_ADMIN")) && userRepository.findByAuthoritiesAuthority("ROLE_ADMIN") != null){
+			throw new ServiceException(HttpStatus.BAD_REQUEST, "ROLE_ADMIN role already exists");
 		}
 		
 		if (userRepository.findByUsername(user.getUsername()) != null) {
@@ -51,8 +52,8 @@ public class UserService implements UserDetailsService{
 		return userRepository.findOne(id);
 	}
 
-	public Iterable<User> findAll(){
-		return userRepository.findAll();
+	public Iterable<User> findAll(Pageable pageable){
+		return userRepository.findAll(pageable);
 	}
 	
 	public void remove(String id){

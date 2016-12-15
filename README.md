@@ -95,16 +95,14 @@ La configuración de spring security se realizará en el fichero `SecurityConfig
 
 # Spring Data
 
-La configuración de spring security se realizará en el fichero `MongoDBConfiguration` en el paquete `es.pongo.configuration`.
+La configuración de spring security se realizará en el fichero `MongoDBConfiguration` en el paquete `es.pongo.configuration`. Para un mayor detalle se puede consultar [la documentación](http://docs.spring.io/spring-data/mongodb/docs/current/reference/html/) de spring.
 
 # Spring Validation
 
 Se agrega una clase de validación para la entidad `User` del modelo. Esta se encuentra en `es.pongo.controller.user` con nombre `UserValidator` y que será ligada en el controlador.
 
 # TODO
- * Agregar permisos en configureMatchers de la clase SecurityConfiguration.
  * Solo puede modificar los datos el mismo usuario o el administrador.
  * Solo puede borrarse el mismo usuario o el administrador.
  * Solo puede ver el detalle el mismo usuario o el administrador.
  * Agregar fecha de expiración al token.
- * Agregar paginación a las búsquedas de usuario.

@@ -147,8 +147,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private void configureMatchers(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 	       .antMatchers(HttpMethod.POST, "/user").permitAll()
-	       .antMatchers(HttpMethod.PUT, "/user").authenticated()
-	       .antMatchers(HttpMethod.DELETE, "/user").authenticated()
-	       .antMatchers(HttpMethod.GET, "/user").authenticated();
+	       .antMatchers(HttpMethod.PUT, "/user").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+	       .antMatchers(HttpMethod.DELETE, "/user").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+	       .antMatchers(HttpMethod.GET, "/user/*").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+	       .antMatchers(HttpMethod.GET, "/user").hasAuthority("ROLE_ADMIN");
 	}
 }
