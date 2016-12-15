@@ -6,8 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.pongo.controller.GenericController;
+import es.pongo.domain.Role;
 import es.pongo.domain.User;
 import es.pongo.exception.ServiceException;
 import es.pongo.service.UserService;
@@ -43,7 +44,11 @@ public class UserController extends GenericController{
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<User> find(@PathVariable String id, Authentication authentication){
     	User user = userService.find(id);
-	    return new ResponseEntity<User>(user, HttpStatus.OK);
+		if(user != null && !user.getUsername().equals(authentication.getName()) && !authentication.getAuthorities().contains(new Role("ROLE_ADMIN"))){
+			throw new AccessDeniedException("Access is denied");
+		}
+
+		return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
 
 	@ResponseBody
@@ -64,7 +69,11 @@ public class UserController extends GenericController{
 	@RequestMapping(method = RequestMethod.PUT, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<User> update(@Validated @RequestBody User user, BindingResult bindingResult, Authentication authentication) throws ServiceException, MethodArgumentNotValidException, NoSuchMethodException, SecurityException {
 
-		if(StringUtils.isEmpty(user.getId())){
+		if(user != null && !user.getUsername().equals(authentication.getName()) && !authentication.getAuthorities().contains(new Role("ROLE_ADMIN"))){
+			throw new AccessDeniedException("Access is denied");
+		}
+
+		if(user != null && StringUtils.isEmpty(user.getId())){
 			bindingResult.rejectValue("id", "id.empty");
 		}
 		
@@ -82,14 +91,10 @@ public class UserController extends GenericController{
 	public void remove(@PathVariable String id, Authentication authentication) throws ServiceException {
 		
 		User user = userService.find(id);
-		if(user == null){
-			
+		if(user != null && !user.getUsername().equals(authentication.getName()) && !authentication.getAuthorities().contains(new Role("ROLE_ADMIN"))){
+			throw new AccessDeniedException("Access is denied");
 		}
 		
-		if(!user.getUsername().equals(authentication.getName()) && !authentication.getAuthorities().contains("ROLE_ADMIN")){
-			
-		}
-		
-		userService.remove(id);
+		userService.remove(user);
 	}
 }

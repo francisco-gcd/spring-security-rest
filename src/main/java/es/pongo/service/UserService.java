@@ -29,6 +29,10 @@ public class UserService implements UserDetailsService{
 	}
 	
 	public User register(User user) throws ServiceException{
+		if(user == null){
+			throw new ServiceException(HttpStatus.BAD_REQUEST, "Invalid User.");
+		}
+
 		if(user.getAuthorities().contains(new Role("ROLE_ADMIN")) && userRepository.findByAuthoritiesAuthority("ROLE_ADMIN") != null){
 			throw new ServiceException(HttpStatus.BAD_REQUEST, "ROLE_ADMIN role already exists");
 		}
@@ -40,23 +44,46 @@ public class UserService implements UserDetailsService{
 		user.setPassword(encryption.encode(user.getPassword()));
 		user.setEnabled(Boolean.TRUE);
 
-		return userRepository.save(user);
+		user = userRepository.save(user);
+		user.setPassword("");
+		
+		return user;
 	}
 	
-	public User update(User user){
+	public User update(User user) throws ServiceException{
+		if(user == null){
+			throw new ServiceException(HttpStatus.BAD_REQUEST, "Invalid User.");
+		}
+
 		user.setPassword(encryption.encode(user.getPassword()));
-		return userRepository.save(user);
+		
+		user = userRepository.save(user);
+		user.setPassword("");
+		
+		return user;
 	}
 	
 	public User find(String id){
-		return userRepository.findOne(id);
+		User user = userRepository.findOne(id);
+		user.setPassword("");
+		
+		return user;
 	}
 
 	public Iterable<User> findAll(Pageable pageable){
-		return userRepository.findAll(pageable);
+		Iterable<User> users = userRepository.findAll(pageable);
+		for(User user : users){
+			user.setPassword("");
+		}
+		
+		return users;
 	}
 	
-	public void remove(String id){
-		userRepository.delete(id);
+	public void remove(User user) throws ServiceException{
+		if(user == null){
+			throw new ServiceException(HttpStatus.BAD_REQUEST, "Invalid User.");
+		}
+		
+		userRepository.delete(user);
 	}
 }

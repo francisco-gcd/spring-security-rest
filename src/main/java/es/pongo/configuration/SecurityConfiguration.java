@@ -17,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -89,18 +91,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		configureHandler(http);
 	}
 
-	private void sendError(HttpServletResponse response, Exception exception, String message, int error) throws IOException, ServletException{
+	private void sendError(HttpServletResponse response, Exception exception, String message, int status) throws IOException, ServletException{
 		if(log.isDebugEnabled()){
 			log.debug(message, exception);
 		}
 		
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("error", error);
+		map.put("status", status);
 		map.put("message", message);
 		map.put("exception", exception.getMessage());
 		
+		response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
+		
 		ObjectMapper mapper = new ObjectMapper();
-		response.setStatus(error);
+		response.setStatus(status);
 		response.getWriter().write(mapper.writeValueAsString(map));
 		response.getWriter().flush();
 		response.getWriter().close();		

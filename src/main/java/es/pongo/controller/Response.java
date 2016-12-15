@@ -30,15 +30,25 @@ public class Response implements Serializable{
 	
 	private static final long serialVersionUID = 1098621883531475888L;
 	
-	private String message;
+    private String exception;
     private HttpStatus status;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+	private String message;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<FieldError> errors;
 
-    public Response(HttpStatus status, String message) {
+    public Response(HttpStatus status, Exception exception) {
+		this.status = status;
+		this.exception = exception.getMessage();
+		this.errors = new LinkedList<FieldError>();
+	}
+
+    public Response(HttpStatus status, Exception exception, String message) {
 		this.status = status;
 		this.message = message;
+		this.exception = exception.getMessage();
 		this.errors = new LinkedList<FieldError>();
 	}
 
@@ -50,14 +60,22 @@ public class Response implements Serializable{
 		this.message = message;
 	}
 
-	public HttpStatus getStatus() {
-		return status;
+	public int getStatus() {
+		return status.value();
 	}
 
 	public void setStatus(HttpStatus status) {
 		this.status = status;
 	}
 	
+	public String getException() {
+		return exception;
+	}
+
+	public void setException(String exception) {
+		this.exception = exception;
+	}
+
 	public List<FieldError> getErrors() {
 		return errors;
 	}
