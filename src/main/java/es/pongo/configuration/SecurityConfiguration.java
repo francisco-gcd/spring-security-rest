@@ -1,9 +1,10 @@
 package es.pongo.configuration;
 
-import static es.pongo.service.JsonWebTokenService.AUTH_HEADER;
+import static es.pongo.configuration.util.JsonWebTokenUtil.AUTH_HEADER;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -42,8 +44,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import es.pongo.configuration.filter.AuthenticationFilter;
-import es.pongo.service.JsonWebTokenService;
+import es.pongo.configuration.filter.JsonWebTokenAuthenticationFilter;
+import es.pongo.configuration.util.JsonWebTokenUtil;
 
 @Configuration
 @EnableWebSecurity
@@ -52,21 +54,24 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
     private final Logger log = LoggerFactory.getLogger(SecurityConfiguration.class);
     
-    @Value("${security.secret}")
-	private String secret;
+    @Value("${security.jwt.salt}")
+	private String jwtSalt;
 
-    @Value("${security.strength}")
+    @Value("${security.password.salt}")
+	private String passwordSalt;
+
+    @Value("${security.password.strength}")
     private int strength;
+
+    @Value("${security.token.live}")
+    private long live;
 
     @Autowired
 	UserDetailsService userService;
 	
-	@Autowired
-	JsonWebTokenService jsonWebTokenService;
-	
 	@Bean
 	public PasswordEncoder encryption(){
-		return new BCryptPasswordEncoder(strength, new SecureRandom(secret.getBytes()));
+		return new BCryptPasswordEncoder(strength, new SecureRandom(passwordSalt.getBytes()));
 	}
 	
     @Override
@@ -82,7 +87,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
-			.addFilterAt(new AuthenticationFilter(jsonWebTokenService, secret), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(new JsonWebTokenAuthenticationFilter(jwtSalt), UsernamePasswordAuthenticationFilter.class)
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		
 		http.csrf().disable();
@@ -118,9 +123,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	        .successHandler(new AuthenticationSuccessHandler() {
 	    		@Override
 	    		public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
+	    			
+	    			Date now = new Date();
+	    			UserDetails user = (UserDetails) authentication.getPrincipal();
+	    			StringBuilder scopes = new StringBuilder();
+	    			for(GrantedAuthority role : user.getAuthorities()){
+	    				scopes.append(role.getAuthority()).append(",");
+	    			}
+	    			
+	    			Map<String, String> values = new HashMap<String, String>();
+	    			values.put(JsonWebTokenUtil.JWT_FIELD_SUB, user.getUsername());
+	    			values.put(JsonWebTokenUtil.JWT_FIELD_EXP, String.valueOf(now.getTime() + live));
+	    			values.put(JsonWebTokenUtil.JWT_FIELD_SCOPES, scopes.substring(0,scopes.length() - 1));
+	    			
 	    			// Se debe enviar el JWT en la cabecera de la respuesta 
 	    			response.setStatus(HttpServletResponse.SC_OK);
-	    			response.setHeader(AUTH_HEADER, jsonWebTokenService.createToken((UserDetails) authentication.getPrincipal(), secret));
+	    			response.setHeader(AUTH_HEADER, JsonWebTokenUtil.createToken(values, jwtSalt));
 	    			response.getWriter().flush();
 	    			response.getWriter().close();		
 	    		}

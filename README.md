@@ -105,6 +105,3 @@ La configuración de spring security se realizará en el fichero `MongoDBConfigu
 # Spring Validation
 
 Se agrega una clase de validación para la entidad `User` del modelo. Esta se encuentra en `es.pongo.controller.user` con nombre `UserValidator` y que será ligada en el controlador.
-
-# TODO
- * Agregar fecha de expiración al token.

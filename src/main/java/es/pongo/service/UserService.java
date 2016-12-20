@@ -65,7 +65,9 @@ public class UserService implements UserDetailsService{
 	
 	public User find(String id){
 		User user = userRepository.findOne(id);
-		user.setPassword("");
+		if(user != null){
+			user.setPassword("");
+		}
 		
 		return user;
 	}
