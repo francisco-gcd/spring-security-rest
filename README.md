@@ -4,7 +4,7 @@ Además, para mantener la persistencia de usuarios se ha utilizado MongoDB con S
 
 Para utilizar la API se exponen las siguientes URL:
 
-|URL|Metodo|Descripción|
+|Metodo|URL|Descripción|
 |---|---|---|
 |`GET`|`rest-api/user`| Todos los usuarios|
 |`GET`|`rest-api/user/{id}`| Detalle usuario|
@@ -22,17 +22,17 @@ Para comprender como debe utilizarse a continuación enumeramos un ejemplo expli
 http://localhost:8080/rest-api/user
 
 {
-  "password": "123456789",
+  "password": "12345678",
   "username": "user",
   "accountNonExpired": true,
   "accountNonLocked": true,
   "credentialsNonExpired": true,
   "enabled": true,
   "authorities": [
-		{
-			"authority" : "ROLE_USER"
-		}
-	]
+  		{
+  			"authority" : "ROLE_ADMIN"
+  		}
+  	]
 }
 ```
 
@@ -41,32 +41,41 @@ http://localhost:8080/rest-api/user
 ```
 http://localhost:8080/rest-api/login?username=user&password=123456789
 
-X-Auth-Token →eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dLCJ1c2VybmFtZSI6InVzZXIifQ==.1MPTBOUc6AqC3IBqoxAnlG1WnX2FuTuRCR5+y95mxmw=
+X-Auth-Token →eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwic2NvcGVzIjoiUk9MRV9BRE1JTiIsImV4cCI6IjE0ODI0MjkxNzg5ODcifQ==.p8wC3/FUQiUKmc1pnJLQbRWUi3Fko3l7xSEMJS2JJeo=
 ```
 
 * Pedimos ver todos los usuarios para lo que pasamos el token por la cabecera de la llamada HTTP.
 
 ```
 http://localhost:8080/rest-api/user
-
-X-Auth-Token →eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dLCJ1c2VybmFtZSI6InVzZXIifQ==.1MPTBOUc6AqC3IBqoxAnlG1WnX2FuTuRCR5+y95mxmw=
+X-Auth-Token →eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwic2NvcGVzIjoiUk9MRV9BRE1JTiIsImV4cCI6IjE0ODI0MjkxNzg5ODcifQ==.p8wC3/FUQiUKmc1pnJLQbRWUi3Fko3l7xSEMJS2JJeo=
 	
-[
-  {
-    "id": "585049a7f8982a0543b9c23f",
-    "password": "$2a$07$WT.m6kpQ94y0wDAOrLhUv.hX3k/By7wifXbS.LFDyPXbRsIYFHH3S",
-    "username": "user",
-    "accountNonExpired": true,
-    "accountNonLocked": true,
-    "credentialsNonExpired": true,
-    "enabled": true,
-    "authorities": [
-      {
-	"authority": "ROLE_USER"
-      }
-    ]
-  }
-]
+{
+  "content": [
+    {
+      "id": "585c122c75d234482a5ec270",
+      "password": "",
+      "username": "user",
+      "accountNonExpired": true,
+      "accountNonLocked": true,
+      "credentialsNonExpired": true,
+      "enabled": true,
+      "authorities": [
+        {
+          "authority": "ROLE_ADMIN"
+        }
+      ]
+    }
+  ],
+  "last": true,
+  "totalElements": 1,
+  "totalPages": 1,
+  "size": 20,
+  "number": 0,
+  "sort": null,
+  "numberOfElements": 1,
+  "first": true
+}
 ```
 	
 # Configuración
@@ -74,8 +83,10 @@ En la aplicación se encontrará el fichero app.properties que contiene los valo
 * _mongodb.host_: la dirección ip donde estará el servidor MongoDB.
 * _mongodb.port_: el puerto por el que se comunicará con MongoDB.
 * _mongodb.database_: el nombre de la base de datos.
-* _security.secret_: será una palabra que nos permitirá codificar las constraseñas y el token JWT.
-* _security.strength_: será la fortaleza para codificar la contraseña.
+* _security.jwt.salt_: será una palabra que nos permitirá codificar el JWT.
+* _security.password.salt_: será una palabra que nos permitirá codificar las constraseñas.
+* _security.password.strength_: será la fortaleza para codificar la contraseña.
+* _security.token.live_: tiempo de vida del token en milisegundos.
 
 # JWT (Json Web Token)
 

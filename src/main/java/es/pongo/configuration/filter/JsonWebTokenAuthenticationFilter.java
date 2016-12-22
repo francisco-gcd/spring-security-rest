@@ -52,7 +52,7 @@ public class JsonWebTokenAuthenticationFilter extends GenericFilterBean  {
 					authorities.add(new Role(authority));
 				}
 
-				if(Long.valueOf(values.get(JsonWebTokenUtil.JWT_FIELD_EXP)) < System.currentTimeMillis()){
+				if(System.currentTimeMillis() < Long.valueOf(values.get(JsonWebTokenUtil.JWT_FIELD_EXP))){
 					sendError((HttpServletResponse) response);
 					return;
 				}
